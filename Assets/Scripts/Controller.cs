@@ -2,14 +2,16 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour
 {
-    [SerializeField] private Snake _snake;
     [SerializeField] private Transform _cursor;
+    private Snake _snake;
 
     private Camera _camera;
     private Plane _plane;
 
-    private void Awake()
+    public void Init(Snake snake)
     {
+        _snake =snake;
+
         _camera = Camera.main;
         _plane = new Plane(Vector3.up, Vector3.zero);
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ public class Tail : MonoBehaviour
 
     private float _snakeSpeed = 2;
     private Transform _head;
-    private List<Transform> _details;
+    private List<Transform> _details = new();
     private List<Vector3> _positionHistory = new List<Vector3>();
 
     public void Init(Transform head,float speed, int detailCount)
@@ -18,8 +19,17 @@ public class Tail : MonoBehaviour
 
         _details.Add(transform);
         _positionHistory.Add(_head.position);
+        _positionHistory.Add(transform.position);
 
         SetDetailCount(detailCount);
+    }
+
+    public void Destroy()
+    {
+        for (int i = 0; i < _details.Count; i++)
+        {
+            Destroy(_details[i].gameObject);
+        }
     }
 
     private void SetDetailCount(int detailCount)
@@ -86,8 +96,8 @@ public class Tail : MonoBehaviour
         {
             _details[i].position = Vector3.Lerp(_positionHistory[i + 1], _positionHistory[i], distance / _detailDistance);
 
-            Vector3 direction = (_positionHistory[i] - _positionHistory[i + 1]).normalized;
-            _details[i].position += direction * Time.deltaTime * _snakeSpeed;
+            //Vector3 direction = (_positionHistory[i] - _positionHistory[i + 1]).normalized;
+            //_details[i].position += direction * Time.deltaTime * _snakeSpeed;
         }
-    }
+    }    
 }
