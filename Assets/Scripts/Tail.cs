@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,10 +6,40 @@ public class Tail : MonoBehaviour
     [SerializeField] private Transform _detailPrefab;
     [SerializeField] private float _detailDistance = 1;
 
-    private float _snakeSpeed = 2;
+    private float _snakeSpeed = 3f;
     private Transform _head;
     private List<Transform> _details = new();
     private List<Vector3> _positionHistory = new List<Vector3>();
+    private List<Quaternion> _rotationHistory = new List<Quaternion>();
+
+    private void Update()
+    {
+        var distance = (_head.position - _positionHistory[0]).magnitude;
+
+        while (distance > _detailDistance)
+        {
+            var direction = (_head.position - _positionHistory[0]).normalized;
+
+            _positionHistory.Insert(0, _positionHistory[0] + direction * _detailDistance);
+            _positionHistory.RemoveAt(_positionHistory.Count - 1);
+
+            _rotationHistory.Insert(0, _head.rotation);
+            _rotationHistory.RemoveAt(_rotationHistory.Count - 1);
+
+            distance -= _detailDistance;
+        }
+
+        for (int i = 0; i < _details.Count; i++)
+        {
+            var percent = distance / _detailDistance;
+
+            _details[i].position = Vector3.Lerp(_positionHistory[i + 1], _positionHistory[i], percent);
+            _details[i].rotation = Quaternion.Lerp(_rotationHistory[i + 1], _rotationHistory[i], percent);
+
+            //Vector3 direction = (_positionHistory[i] - _positionHistory[i + 1]).normalized;
+            //_details[i].position += direction * Time.deltaTime * _snakeSpeed;
+        }
+    }
 
     public void Init(Transform head,float speed, int detailCount)
     {
@@ -19,7 +48,10 @@ public class Tail : MonoBehaviour
 
         _details.Add(transform);
         _positionHistory.Add(_head.position);
+        _rotationHistory.Add(_head.rotation);
         _positionHistory.Add(transform.position);
+        _rotationHistory.Add(transform.rotation);
+
 
         SetDetailCount(detailCount);
     }
@@ -34,7 +66,7 @@ public class Tail : MonoBehaviour
 
     private void SetDetailCount(int detailCount)
     {
-        if (detailCount == _details.Count + 1)
+        if (detailCount == _details.Count - 1)
             return;
 
         int diff = (_details.Count - 1) - detailCount;
@@ -58,9 +90,11 @@ public class Tail : MonoBehaviour
     private void AddDetail()
     {
         var position = _details[_details.Count - 1].position;
-        var detail = Instantiate(_detailPrefab, position, Quaternion.identity);
+        var rotation = _details[_details.Count - 1].rotation;
+        var detail = Instantiate(_detailPrefab, position, rotation);
         _details.Insert(0, detail);
         _positionHistory.Add(position);
+        _rotationHistory.Add(rotation);
     }
 
     private void RemoveDetail()
@@ -75,29 +109,9 @@ public class Tail : MonoBehaviour
         _details.Remove(detail);
         Destroy(detail.gameObject);
         _positionHistory.RemoveAt(_positionHistory.Count - 1);
+        _rotationHistory.RemoveAt(_rotationHistory.Count - 1);
     }
 
 
-    private void Update()
-    {
-        var distance = (_head.position - _positionHistory[0]).magnitude;
-
-        while(distance > _detailDistance)
-        {
-            var direction = (_head.position - _positionHistory[0]).normalized;
-
-            _positionHistory.Insert(0, _positionHistory[0] + direction * _detailDistance);
-            _positionHistory.RemoveAt(_positionHistory.Count - 1);
-
-            distance -= _detailDistance;
-        }
-
-        for (int i = 0; i <_details.Count; i++)
-        {
-            _details[i].position = Vector3.Lerp(_positionHistory[i + 1], _positionHistory[i], distance / _detailDistance);
-
-            //Vector3 direction = (_positionHistory[i] - _positionHistory[i + 1]).normalized;
-            //_details[i].position += direction * Time.deltaTime * _snakeSpeed;
-        }
-    }    
+    
 }

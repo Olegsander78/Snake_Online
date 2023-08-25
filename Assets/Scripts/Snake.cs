@@ -11,6 +11,12 @@ public class Snake : MonoBehaviour
     private Vector3 _targetDirection = Vector3.zero;
     private Tail _tail;
 
+    private void Update()
+    {
+        Rotate();
+        Move();
+    }
+
     public void Init(int detailCount)
     {
         _tail = Instantiate(_tailPrefab, transform.position, Quaternion.identity);
@@ -21,17 +27,23 @@ public class Snake : MonoBehaviour
     {
         _tail.Destroy();
         Destroy(gameObject);
-    }
-
-    private void Update()
-    {
-        Rotate();
-        Move();        
-    }
+    }    
 
     private void Move()
     {
         transform.position += _head.forward * _speed * Time.deltaTime;
+    }
+
+    public void GetMoveInfo(out Vector3 position)
+    {
+        position = transform.position;
+    }
+
+    public void LookAt(Vector3 cursorPosition)
+    {
+        //_targetDirection = cursorPosition - _head.position;
+
+        _directionPoint.LookAt(cursorPosition);
     }
 
     private void Rotate()
@@ -51,10 +63,5 @@ public class Snake : MonoBehaviour
         _head.Rotate(0f, rotateY, 0f);
     }
 
-    public void LookAt(Vector3 cursorPosition)
-    {
-        //_targetDirection = cursorPosition - _head.position;
-        
-        _directionPoint.LookAt(cursorPosition);
-    }
+    
 }

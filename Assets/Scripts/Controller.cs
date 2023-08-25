@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Controller : MonoBehaviour
 {
+    [SerializeField] private MultiplayerManager _multiplayerManager;
     [SerializeField] private Transform _cursor;
     private Snake _snake;
 
@@ -10,8 +13,9 @@ public class Controller : MonoBehaviour
 
     public void Init(Snake snake)
     {
-        _snake =snake;
+        _multiplayerManager = MultiplayerManager.Instance;
 
+        _snake =snake;
         _camera = Camera.main;
         _plane = new Plane(Vector3.up, Vector3.zero);
     }
@@ -23,6 +27,21 @@ public class Controller : MonoBehaviour
             MoveCursor();
             _snake.LookAt(_cursor.position);
         }
+
+        SendMove();
+    }
+
+    private void SendMove()
+    {
+        _snake.GetMoveInfo(out Vector3 position);
+
+        Dictionary<string, object> data = new Dictionary<string, object>()
+        {
+            {"x",position.x },
+            {"z",position.z }
+        };
+
+        _multiplayerManager.SendMessage("move", data);
     }
 
     private void MoveCursor()
