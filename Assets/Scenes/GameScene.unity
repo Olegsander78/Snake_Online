@@ -13130,6 +13130,8 @@ MonoBehaviour:
     type: 3}
   _snakePrefab: {fileID: 1025615129428607376, guid: b564b97d89b42cf46be3d31f44ea48e2,
     type: 3}
+  _playerAim: {fileID: 749432951531188190, guid: 499b2c631fa93a54d9d9033e25df069b,
+    type: 3}
 --- !u!1001 &1973198157
 PrefabInstance:
   m_ObjectHideFlags: 0

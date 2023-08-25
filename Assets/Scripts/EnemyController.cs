@@ -43,6 +43,6 @@ public class EnemyController : MonoBehaviour
     public void Destroy()
     {
         _player.OnChange -= Onchange;
-        _snake.Destroy();
+        _snake?.Destroy();
     }
 }

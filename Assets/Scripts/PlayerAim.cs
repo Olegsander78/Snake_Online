@@ -26,6 +26,11 @@ public class PlayerAim : MonoBehaviour
         _targetDirection = pointToLook - transform.position;        
     }
 
+    public void GetMoveInfo(out Vector3 position)
+    {
+        position = transform.position;
+    }
+
     private void Rotate()
     {
         Quaternion targetRotation = Quaternion.LookRotation(_targetDirection);

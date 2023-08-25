@@ -4,17 +4,13 @@ public class Snake : MonoBehaviour
 {
     [SerializeField] private Tail _tailPrefab;
     [SerializeField] private Transform _head;
-    [SerializeField] private Transform _directionPoint;
     [SerializeField] private float _speed = 2f;
-    [SerializeField] private float _rotateSpeed = 90f;
     public float Speed => _speed;
 
-    private Vector3 _targetDirection = Vector3.zero;
     private Tail _tail;
 
     private void Update()
     {
-        Rotate();
         Move();
     }
 
@@ -33,47 +29,16 @@ public class Snake : MonoBehaviour
     {
         _tail.Destroy();
         Destroy(gameObject);
-    }        
-
-    public void GetMoveInfo(out Vector3 position)
-    {
-        position = transform.position;
-    }
+    }            
 
     public void SetRotation(Vector3 pointToLook)
     {
-        _directionPoint.LookAt(pointToLook);
+        //_directionPoint.LookAt(pointToLook);
         _head.LookAt(pointToLook);
-    }
-
-    public void LerpRotation(Vector3 cursorPosition)
-    {
-        //_targetDirection = cursorPosition - _head.position;
-
-        _directionPoint.LookAt(cursorPosition);
-    }
+    }    
 
     private void Move()
     {
         transform.position += _head.forward * _speed * Time.deltaTime;
-    }
-
-    private void Rotate()
-    {
-        //Quaternion targetRotation = Quaternion.LookRotation(_targetDirection);
-        //_head.rotation = Quaternion.RotateTowards(_head.rotation, targetRotation, Time.deltaTime * _rotateSpeed);
-
-        var diffY = _directionPoint.eulerAngles.y - _head.eulerAngles.y;
-
-        if (diffY > 180)
-            diffY = (diffY - 180) * -1;
-        else if (diffY < -180)
-            diffY = (diffY + 180) * -1;
-
-        float maxAngle = Time.deltaTime * _rotateSpeed;
-        float rotateY = Mathf.Clamp(diffY, -maxAngle, maxAngle);
-        _head.Rotate(0f, rotateY, 0f);
-    }
-
-    
+    }    
 }
