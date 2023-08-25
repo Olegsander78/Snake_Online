@@ -35,9 +35,6 @@ public class Tail : MonoBehaviour
 
             _details[i].position = Vector3.Lerp(_positionHistory[i + 1], _positionHistory[i], percent);
             _details[i].rotation = Quaternion.Lerp(_rotationHistory[i + 1], _rotationHistory[i], percent);
-
-            //Vector3 direction = (_positionHistory[i] - _positionHistory[i + 1]).normalized;
-            //_details[i].position += direction * Time.deltaTime * _snakeSpeed;
         }
     }
 
@@ -64,7 +61,7 @@ public class Tail : MonoBehaviour
         }
     }
 
-    private void SetDetailCount(int detailCount)
+    public void SetDetailCount(int detailCount)
     {
         if (detailCount == _details.Count - 1)
             return;

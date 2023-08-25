@@ -7,6 +7,7 @@ public class Snake : MonoBehaviour
     [SerializeField] private Transform _directionPoint;
     [SerializeField] private float _speed = 2f;
     [SerializeField] private float _rotateSpeed = 90f;
+    public float Speed => _speed;
 
     private Vector3 _targetDirection = Vector3.zero;
     private Tail _tail;
@@ -23,27 +24,38 @@ public class Snake : MonoBehaviour
         _tail.Init(_head, _speed, detailCount);
     }
 
+    public void SetDetailCount(int detailCount)
+    {
+        _tail.SetDetailCount(detailCount);
+    }
+
     public void Destroy()
     {
         _tail.Destroy();
         Destroy(gameObject);
-    }    
-
-    private void Move()
-    {
-        transform.position += _head.forward * _speed * Time.deltaTime;
-    }
+    }        
 
     public void GetMoveInfo(out Vector3 position)
     {
         position = transform.position;
     }
 
-    public void LookAt(Vector3 cursorPosition)
+    public void SetRotation(Vector3 pointToLook)
+    {
+        _directionPoint.LookAt(pointToLook);
+        _head.LookAt(pointToLook);
+    }
+
+    public void LerpRotation(Vector3 cursorPosition)
     {
         //_targetDirection = cursorPosition - _head.position;
 
         _directionPoint.LookAt(cursorPosition);
+    }
+
+    private void Move()
+    {
+        transform.position += _head.forward * _speed * Time.deltaTime;
     }
 
     private void Rotate()

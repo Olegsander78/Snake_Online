@@ -1,6 +1,7 @@
 using Colyseus;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager>
@@ -73,21 +74,39 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
     {
         var position = new Vector3(player.x, 0f, player.z);
         Snake snake = Instantiate(_snakePrefab, position, Quaternion.identity);
-        snake.Init(2);
+        snake.Init(player.d);
         Controller controller = Instantiate(_controllerPrefab);
         controller.Init(snake);
     }
     #endregion
 
     #region Enemy
+    private Dictionary<string, EnemyController> _enemies = new();
     private void CreateEnemy(string key, Player player)
     {
-        throw new NotImplementedException();
+        var position = new Vector3(player.x, 0f, player.z);
+        
+        Snake snake = Instantiate(_snakePrefab, position, Quaternion.identity);
+        snake.Init(player.d);
+
+        EnemyController enemy = snake.AddComponent<EnemyController>();
+        enemy.Init(player, snake);
+
+        _enemies.Add(key, enemy);
     }
 
     private void RemoveEnemy(string key, Player value)
     {
-        throw new NotImplementedException();
+        if (_enemies.TryGetValue(key, out EnemyController enemy))
+        {
+            _enemies.Remove(key);
+            enemy.Destroy();
+        }
+        else
+        {
+            Debug.LogError("Enemy to destroy not found!");
+            return;
+        }
     }
     #endregion
 }

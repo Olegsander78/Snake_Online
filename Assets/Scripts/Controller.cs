@@ -1,13 +1,14 @@
-using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Controller : MonoBehaviour
 {
-    [SerializeField] private MultiplayerManager _multiplayerManager;
+    [SerializeField] private float _cameraOffsetY = 20f;
     [SerializeField] private Transform _cursor;
-    private Snake _snake;
 
+    private MultiplayerManager _multiplayerManager;
+    private Snake _snake;
     private Camera _camera;
     private Plane _plane;
 
@@ -18,6 +19,8 @@ public class Controller : MonoBehaviour
         _snake =snake;
         _camera = Camera.main;
         _plane = new Plane(Vector3.up, Vector3.zero);
+
+        _snake.AddComponent<CameraManager>().Init(_cameraOffsetY);
     }
 
     void Update()
@@ -25,7 +28,7 @@ public class Controller : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             MoveCursor();
-            _snake.LookAt(_cursor.position);
+            _snake.LerpRotation(_cursor.position);
         }
 
         SendMove();
