@@ -92,6 +92,16 @@ public class Tail : MonoBehaviour
         }
     }
 
+    public Vector3[] GetDetailpositions()
+    {
+        var positions = new Vector3[_details.Count];
+        for (int i = 0; i < _details.Count; i++)
+        {
+            positions[i] = _details[i].position;
+        }
+        return positions;
+    }
+
     private void AddDetail()
     {
         var position = _details[_details.Count - 1].position;
@@ -129,5 +139,18 @@ public class Tail : MonoBehaviour
         {
             children[i].gameObject.layer = _playerLayer;
         }
-    }
+    }    
+}
+
+[Serializable]
+public struct DetailPosition
+{
+    public float x;
+    public float z;
+}
+
+[Serializable]
+public struct Detailpositions
+{
+    public DetailPosition[] ds;
 }

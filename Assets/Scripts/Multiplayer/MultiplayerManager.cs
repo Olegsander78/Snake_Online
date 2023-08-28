@@ -39,6 +39,11 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         _room.Send(key, data);
     }
 
+    public void SendMessage(string key, string data)
+    {
+        _room.Send(key, data);
+    }
+
     private async void Connect()
     {
         _room = await client.JoinOrCreate<State>(GAME_ROOM_NAME);

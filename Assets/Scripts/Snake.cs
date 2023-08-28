@@ -37,6 +37,9 @@ public class Snake : MonoBehaviour
 
     public void Destroy()
     {
+        var detailPositions = _tail.GetDetailpositions();
+        string json = JsonUtility.ToJson(detailPositions);
+        MultiplayerManager.Instance.SendMessage("gameOver", json);
         _tail.Destroy();
         Destroy(gameObject);
     }            
