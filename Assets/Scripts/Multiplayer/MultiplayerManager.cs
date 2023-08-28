@@ -63,7 +63,10 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         _room.State.players.OnAdd += CreateEnemy;
         _room.State.players.OnRemove += RemoveEnemy;
 
-    }
+        _room.State.apples.ForEach(CreateApple);
+        _room.State.apples.OnAdd += (key, apple) => CreateApple(apple);
+        _room.State.apples.OnRemove += RemoveApple;
+    }    
     #endregion
 
     #region Player
@@ -114,6 +117,28 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
             Debug.LogError("Enemy to destroy not found!");
             return;
         }
+    }
+    #endregion
+
+    #region Apple
+    [SerializeField] private Apple _applePrefab;
+    [SerializeField] private Dictionary<Vector2Float, Apple> _applesMap = new(); 
+    private void CreateApple(Vector2Float vector2Float)
+    {
+        Vector3 position = new Vector3(vector2Float.x, 0f, vector2Float.z);
+        var apple = Instantiate(_applePrefab, position, Quaternion.identity);
+        apple.Init(vector2Float);
+        _applesMap.Add(vector2Float, apple);
+    }
+
+    private void RemoveApple(int key, Vector2Float vector2Float)
+    {
+        if (_applesMap.ContainsKey(vector2Float) == false)
+            return;
+
+        var apple = _applesMap[vector2Float];
+        _applesMap.Remove(vector2Float);
+        apple.Destroy();
     }
     #endregion
 }
