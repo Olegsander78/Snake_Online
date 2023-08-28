@@ -1,12 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerAim : MonoBehaviour
 {
+    [SerializeField] private float _overlapRadius = .5f;
     [SerializeField] private float _speedRotation = 90f;
+
+    private Transform _snakeHead;
     private Vector3 _targetDirection = Vector3.zero;
     private float _speed;
 
@@ -16,8 +15,27 @@ public class PlayerAim : MonoBehaviour
         Move();
     }
 
-    public void Init(float speed)
+    private void FixedUpdate()
     {
+        CheckCollision();
+    }
+
+    private void CheckCollision()
+    {
+        Collider[] colliders = Physics.OverlapSphere(_snakeHead.position,_overlapRadius);
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            if (colliders[i].TryGetComponent<Apple>(out Apple apple))
+            {
+                apple.Collect();
+            }
+        }
+    }
+
+    public void Init(Transform snakeHead, float speed)
+    {
+        _snakeHead = snakeHead;
         _speed = speed;
     }   
 
@@ -40,7 +58,5 @@ public class PlayerAim : MonoBehaviour
     private void Move()
     {
         transform.position += transform.forward * _speed * Time.deltaTime;
-    }
-
-    
+    }    
 }

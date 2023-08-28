@@ -3,7 +3,7 @@ using UnityEngine;
 public class Snake : MonoBehaviour
 {
     [SerializeField] private Tail _tailPrefab;
-    [SerializeField] private Transform _head;
+    [field: SerializeField] public Transform Head { get; private set; }
     [SerializeField] private float _speed = 2f;
     public float Speed => _speed;
 
@@ -17,7 +17,7 @@ public class Snake : MonoBehaviour
     public void Init(int detailCount)
     {
         _tail = Instantiate(_tailPrefab, transform.position, Quaternion.identity);
-        _tail.Init(_head, _speed, detailCount);
+        _tail.Init(Head, _speed, detailCount);
     }
 
     public void SetDetailCount(int detailCount)
@@ -33,11 +33,11 @@ public class Snake : MonoBehaviour
 
     public void SetRotation(Vector3 pointToLook)
     {
-        _head.LookAt(pointToLook);
+        Head.LookAt(pointToLook);
     }    
 
     private void Move()
     {
-        transform.position += _head.forward * _speed * Time.deltaTime;
+        transform.position += Head.forward * _speed * Time.deltaTime;
     }    
 }
