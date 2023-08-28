@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ public class Tail : MonoBehaviour
     private List<Transform> _details = new();
     private List<Vector3> _positionHistory = new List<Vector3>();
     private List<Quaternion> _rotationHistory = new List<Quaternion>();
+    private int _playerLayer;
+    private bool _isPlayer;
 
     private void Update()
     {
@@ -38,8 +41,14 @@ public class Tail : MonoBehaviour
         }
     }
 
-    public void Init(Transform head,float speed, int detailCount)
+    public void Init(Transform head,float speed, int detailCount, int playerLayer, bool isPlayer)
     {
+        _playerLayer = playerLayer;
+        _isPlayer = isPlayer;
+
+        if (isPlayer)
+            SetPlayerLayer(gameObject);
+
         _snakeSpeed = speed;
         _head = head;
 
@@ -48,7 +57,6 @@ public class Tail : MonoBehaviour
         _rotationHistory.Add(_head.rotation);
         _positionHistory.Add(transform.position);
         _rotationHistory.Add(transform.rotation);
-
 
         SetDetailCount(detailCount);
     }
@@ -89,6 +97,10 @@ public class Tail : MonoBehaviour
         var position = _details[_details.Count - 1].position;
         var rotation = _details[_details.Count - 1].rotation;
         var detail = Instantiate(_detailPrefab, position, rotation);
+        
+        if (_isPlayer)
+            SetPlayerLayer(detail.gameObject);
+
         _details.Insert(0, detail);
         _positionHistory.Add(position);
         _rotationHistory.Add(rotation);
@@ -109,6 +121,13 @@ public class Tail : MonoBehaviour
         _rotationHistory.RemoveAt(_rotationHistory.Count - 1);
     }
 
-
-    
+    private void SetPlayerLayer(GameObject gameObject)
+    {
+        gameObject.layer = _playerLayer;
+        var children = GetComponentsInChildren<Transform>();
+        for (int i = 0; i < children.Length; i++)
+        {
+            children[i].gameObject.layer = _playerLayer;
+        }
+    }
 }

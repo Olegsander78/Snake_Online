@@ -36,14 +36,18 @@ public class Controller : MonoBehaviour
         _camera = Camera.main;
         _plane = new Plane(Vector3.up, Vector3.zero);
 
-        _snake.AddComponent<CameraManager>().Init(_cameraOffsetY);
+        _camera.transform.parent = _snake.transform;
+        _camera.transform.localPosition = Vector3.up * _cameraOffsetY;
 
         _player.OnChange += Onchange;
     }
     public void Destroy()
     {
+        _camera.transform.parent = null;
+
         _player.OnChange -= Onchange;
         _snake.Destroy();
+        Destroy(gameObject);
     }
 
     private void SendMove()

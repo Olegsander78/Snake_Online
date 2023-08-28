@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 public class PlayerAim : MonoBehaviour
 {
+    [SerializeField] private LayerMask _collisionLayer;
     [SerializeField] private float _overlapRadius = .5f;
     [SerializeField] private float _speedRotation = 90f;
 
@@ -22,7 +24,7 @@ public class PlayerAim : MonoBehaviour
 
     private void CheckCollision()
     {
-        Collider[] colliders = Physics.OverlapSphere(_snakeHead.position,_overlapRadius);
+        Collider[] colliders = Physics.OverlapSphere(_snakeHead.position,_overlapRadius, _collisionLayer);
 
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -30,7 +32,17 @@ public class PlayerAim : MonoBehaviour
             {
                 apple.Collect();
             }
+            else
+            {
+                GameOver();
+            }
         }
+    }
+
+    private void GameOver()
+    {
+        FindObjectOfType<Controller>().Destroy();
+        Destroy(gameObject);
     }
 
     public void Init(Transform snakeHead, float speed)
