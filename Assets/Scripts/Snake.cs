@@ -33,7 +33,6 @@ public class Snake : MonoBehaviour
 
     public void SetRotation(Vector3 pointToLook)
     {
-        //_directionPoint.LookAt(pointToLook);
         _head.LookAt(pointToLook);
     }    
 

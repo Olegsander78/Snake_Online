@@ -15,6 +15,17 @@ public class Controller : MonoBehaviour
     private Camera _camera;
     private Plane _plane;
 
+    private void Update()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            MoveCursor();
+            _playerAim.SetTargetDirection(_cursor.position);
+        }
+
+        SendMove();
+    }
+
     public void Init(PlayerAim aim, Player player, Snake snake)
     {
         _multiplayerManager = MultiplayerManager.Instance;
@@ -29,16 +40,10 @@ public class Controller : MonoBehaviour
 
         _player.OnChange += Onchange;
     }
-
-    void Update()
+    public void Destroy()
     {
-        if (Input.GetMouseButton(0))
-        {
-            MoveCursor();
-            _playerAim.SetTargetDirection(_cursor.position);
-        }
-
-        SendMove();
+        _player.OnChange -= Onchange;
+        _snake.Destroy();
     }
 
     private void SendMove()
@@ -61,13 +66,7 @@ public class Controller : MonoBehaviour
         var point = ray.GetPoint(distance);
 
         _cursor.position = point;
-    }
-
-    public void Destroy()
-    {
-        _player.OnChange -= Onchange;
-        _snake.Destroy();
-    }
+    }    
 
     private void Onchange(List<DataChange> changes)
     {
