@@ -15,6 +15,7 @@ public class PlayerAim : MonoBehaviour
     {
         Rotate();
         Move();
+        CheckOutOfBounds();
     }
 
     private void FixedUpdate()
@@ -22,6 +23,11 @@ public class PlayerAim : MonoBehaviour
         CheckCollision();
     }
 
+    private void CheckOutOfBounds()
+    {
+        if (Math.Abs(_snakeHead.position.x) > 126 || Math.Abs(_snakeHead.position.z) > 126)
+            GameOver();
+    }
     private void CheckCollision()
     {
         Collider[] colliders = Physics.OverlapSphere(_snakeHead.position,_overlapRadius, _collisionLayer);
@@ -34,7 +40,22 @@ public class PlayerAim : MonoBehaviour
             }
             else
             {
-                GameOver();
+                if (colliders[i].GetComponentInParent<Snake>())
+                {
+                    var enemy = colliders[i].transform;
+                    var playerAngle = Vector3.Angle(enemy.position - _snakeHead.position, transform.forward);
+                    var enemyAngle = Vector3.Angle(_snakeHead.position - enemy.position, enemy.forward);
+
+                    if (playerAngle < enemyAngle + 5)
+                    {
+                        GameOver();
+                    }
+
+                }
+                else
+                {
+                    GameOver();
+                }
             }
         }
     }
