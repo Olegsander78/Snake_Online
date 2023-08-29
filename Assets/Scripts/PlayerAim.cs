@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class PlayerAim : MonoBehaviour
 {
+    private const float CENTER_TO_RIGHT_BORDER_DISTANCE = 124f;
+    private const float CENTER_TO_LEFT_BORDER_DISTANCE = -125f;
+    private const float CENTER_TO_TOP_BORDER_DISTANCE = 124.8f;
+    private const float CENTER_TO_BOTTOM_BORDER_DISTANCE = -124.8f;
+
     [SerializeField] private LayerMask _collisionLayer;
     [SerializeField] private float _overlapRadius = .5f;
     [SerializeField] private float _speedRotation = 90f;
@@ -15,7 +20,7 @@ public class PlayerAim : MonoBehaviour
     {
         Rotate();
         Move();
-        //CheckOutOfBounds();
+        CheckOutOfBounds();
     }
 
     private void FixedUpdate()
@@ -51,9 +56,13 @@ public class PlayerAim : MonoBehaviour
     }
     private void CheckOutOfBounds()
     {
-        if (Mathf.Abs(_snakeHead.position.x) > 126 || Mathf.Abs(_snakeHead.position.z) > 126)
+        if (_snakeHead.position.x > CENTER_TO_RIGHT_BORDER_DISTANCE ||
+            _snakeHead.position.x < CENTER_TO_LEFT_BORDER_DISTANCE ||
+            _snakeHead.position.z > CENTER_TO_TOP_BORDER_DISTANCE ||
+            _snakeHead.position.z < CENTER_TO_BOTTOM_BORDER_DISTANCE)
             GameOver();
     }
+
     private void CheckCollision()
     {
         Collider[] colliders = Physics.OverlapSphere(_snakeHead.position, _overlapRadius, _collisionLayer);
