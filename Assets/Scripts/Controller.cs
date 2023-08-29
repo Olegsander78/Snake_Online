@@ -11,6 +11,7 @@ public class Controller : MonoBehaviour
     private MultiplayerManager _multiplayerManager;
     private PlayerAim _playerAim;
     private Player _player;
+    private string _clientId;
     private Snake _snake;
     private Camera _camera;
     private Plane _plane;
@@ -26,11 +27,12 @@ public class Controller : MonoBehaviour
         SendMove();
     }
 
-    public void Init(PlayerAim aim, Player player, Snake snake)
+    public void Init(string clientId, PlayerAim aim, Player player, Snake snake)
     {
         _multiplayerManager = MultiplayerManager.Instance;
 
         _playerAim = aim;
+        _clientId = clientId;
         _player = player;
         _snake =snake;
         _camera = Camera.main;
@@ -46,7 +48,7 @@ public class Controller : MonoBehaviour
         _camera.transform.parent = null;
 
         _player.OnChange -= Onchange;
-        _snake.Destroy();
+        _snake.Destroy(_clientId);
         Destroy(gameObject);
     }
 

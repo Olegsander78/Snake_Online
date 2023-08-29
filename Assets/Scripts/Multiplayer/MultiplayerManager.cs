@@ -91,7 +91,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         aim.Init(snake.Head, snake.Speed);
 
         Controller controller = Instantiate(_controllerPrefab);
-        controller.Init(aim, player, snake);
+        controller.Init(_room.SessionId, aim, player, snake);
     }
     #endregion
 
@@ -105,7 +105,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         snake.Init(player.d);
 
         EnemyController enemy = snake.AddComponent<EnemyController>();
-        enemy.Init(player, snake);
+        enemy.Init(key, player, snake);
 
         _enemies.Add(key, enemy);
     }

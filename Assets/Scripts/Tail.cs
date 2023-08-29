@@ -92,14 +92,25 @@ public class Tail : MonoBehaviour
         }
     }
 
-    public Vector3[] GetDetailpositions()
+    public DetailPositions GetDetailpositions()
     {
-        var positions = new Vector3[_details.Count];
-        for (int i = 0; i < _details.Count; i++)
+        var detailCount = _details.Count;
+        DetailPosition[] ds = new DetailPosition[detailCount];
+        for (int i = 0; i < detailCount; i++)
         {
-            positions[i] = _details[i].position;
+            ds[i] = new DetailPosition()
+            {
+                x = _details[i].position.x,
+                z = _details[i].position.z
+            };
         }
-        return positions;
+
+        DetailPositions detailPositions = new DetailPositions()
+        {
+            ds = ds
+        };
+
+        return detailPositions;
     }
 
     private void AddDetail()
@@ -150,7 +161,8 @@ public struct DetailPosition
 }
 
 [Serializable]
-public struct Detailpositions
+public struct DetailPositions
 {
+    public string id;
     public DetailPosition[] ds;
 }
