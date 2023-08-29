@@ -15,7 +15,7 @@ public class PlayerAim : MonoBehaviour
     {
         Rotate();
         Move();
-        CheckOutOfBounds();
+        //CheckOutOfBounds();
     }
 
     private void FixedUpdate()

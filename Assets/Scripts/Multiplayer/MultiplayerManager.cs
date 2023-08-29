@@ -104,7 +104,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
     #endregion
 
     #region Enemy
-    private Dictionary<string, EnemyController> _enemies = new Dictionary<string, EnemyController>();
+    private Dictionary<string, EnemyController> _enemiesMap = new Dictionary<string, EnemyController>();
     private void CreateEnemy(string key, Player player)
     {
         var position = new Vector3(player.x, 0f, player.z);
@@ -115,7 +115,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         EnemyController enemy = snake.AddComponent<EnemyController>();
         enemy.Init(key, player, snake);
 
-        _enemies.Add(key, enemy);
+        _enemiesMap.Add(key, enemy);
 
         AddLeader(key, player);
     }
@@ -124,16 +124,15 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
     {
         RemoveLeader(key);
         
-        if (_enemies.TryGetValue(key, out EnemyController enemy))
-        {
-            _enemies.Remove(key);
-            enemy.Destroy();
-        }
-        else
+        if (_enemiesMap.ContainsKey(key) == false)
         {
             Debug.LogError("Enemy to destroy not found!");
             return;
         }
+        EnemyController enemy = _enemiesMap[key];
+
+        _enemiesMap.Remove(key);
+        enemy.Destroy();
     }
     #endregion
 
@@ -215,8 +214,9 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         {
             text += $"{i}. {item.Value.login}: {item.Value.score}\n";
             i++;
-            Debug.Log(text);
+
         }
+        _text.text = text;
     }
     #endregion
 }
