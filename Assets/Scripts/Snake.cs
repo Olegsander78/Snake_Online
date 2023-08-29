@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Snake : MonoBehaviour
 {
+    [field: SerializeField] public Transform Head { get; private set; }
     [SerializeField] private int _playerLayer = 6;
     [SerializeField] private Tail _tailPrefab;
-    [field: SerializeField] public Transform Head { get; private set; }
     [SerializeField] private float _speed = 2f;
     public float Speed => _speed;
 

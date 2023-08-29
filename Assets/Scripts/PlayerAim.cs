@@ -21,16 +21,42 @@ public class PlayerAim : MonoBehaviour
     private void FixedUpdate()
     {
         CheckCollision();
+    }    
+
+    public void Init(Transform snakeHead, float speed)
+    {
+        _snakeHead = snakeHead;
+        _speed = speed;
+    }   
+
+    public void SetTargetDirection(Vector3 pointToLook)
+    {
+        _targetDirection = pointToLook - transform.position;        
     }
 
+    public void GetMoveInfo(out Vector3 position)
+    {
+        position = transform.position;
+    }
+
+    private void Rotate()
+    {
+        Quaternion targetRotation = Quaternion.LookRotation(_targetDirection);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * _speedRotation);
+    }
+
+    private void Move()
+    {
+        transform.position += transform.forward * _speed * Time.deltaTime;
+    }
     private void CheckOutOfBounds()
     {
-        if (Math.Abs(_snakeHead.position.x) > 126 || Math.Abs(_snakeHead.position.z) > 126)
+        if (Mathf.Abs(_snakeHead.position.x) > 126 || Mathf.Abs(_snakeHead.position.z) > 126)
             GameOver();
     }
     private void CheckCollision()
     {
-        Collider[] colliders = Physics.OverlapSphere(_snakeHead.position,_overlapRadius, _collisionLayer);
+        Collider[] colliders = Physics.OverlapSphere(_snakeHead.position, _overlapRadius, _collisionLayer);
 
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -65,31 +91,4 @@ public class PlayerAim : MonoBehaviour
         FindObjectOfType<Controller>().Destroy();
         Destroy(gameObject);
     }
-
-    public void Init(Transform snakeHead, float speed)
-    {
-        _snakeHead = snakeHead;
-        _speed = speed;
-    }   
-
-    public void SetTargetDirection(Vector3 pointToLook)
-    {
-        _targetDirection = pointToLook - transform.position;        
-    }
-
-    public void GetMoveInfo(out Vector3 position)
-    {
-        position = transform.position;
-    }
-
-    private void Rotate()
-    {
-        Quaternion targetRotation = Quaternion.LookRotation(_targetDirection);
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, Time.deltaTime * _speedRotation);
-    }
-
-    private void Move()
-    {
-        transform.position += transform.forward * _speed * Time.deltaTime;
-    }    
 }

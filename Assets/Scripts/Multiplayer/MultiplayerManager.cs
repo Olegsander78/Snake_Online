@@ -1,8 +1,9 @@
 using Colyseus;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MultiplayerManager : ColyseusManager<MultiplayerManager>
 {    
@@ -46,7 +47,12 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
 
     private async void Connect()
     {
-        _room = await client.JoinOrCreate<State>(GAME_ROOM_NAME);
+        Dictionary<string, object> data = new Dictionary<string, object>()
+        {
+            {"login", PlayerSettings.Instance.Login }
+        };
+
+        _room = await client.JoinOrCreate<State>(GAME_ROOM_NAME, data);
 
         _room.OnStateChange += OnChange;
     }
@@ -92,11 +98,13 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
 
         Controller controller = Instantiate(_controllerPrefab);
         controller.Init(_room.SessionId, aim, player, snake);
+
+        AddLeader(_room.SessionId, player);
     }
     #endregion
 
     #region Enemy
-    private Dictionary<string, EnemyController> _enemies = new();
+    private Dictionary<string, EnemyController> _enemies = new Dictionary<string, EnemyController>();
     private void CreateEnemy(string key, Player player)
     {
         var position = new Vector3(player.x, 0f, player.z);
@@ -108,10 +116,14 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         enemy.Init(key, player, snake);
 
         _enemies.Add(key, enemy);
+
+        AddLeader(key, player);
     }
 
     private void RemoveEnemy(string key, Player value)
     {
+        RemoveLeader(key);
+        
         if (_enemies.TryGetValue(key, out EnemyController enemy))
         {
             _enemies.Remove(key);
@@ -127,7 +139,7 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
 
     #region Apple
     [SerializeField] private Apple _applePrefab;
-    [SerializeField] private Dictionary<Vector2Float, Apple> _applesMap = new(); 
+    [SerializeField] private Dictionary<Vector2Float, Apple> _applesMap = new Dictionary<Vector2Float, Apple>(); 
     private void CreateApple(Vector2Float vector2Float)
     {
         Vector3 position = new Vector3(vector2Float.x, 0f, vector2Float.z);
@@ -144,6 +156,67 @@ public class MultiplayerManager : ColyseusManager<MultiplayerManager>
         var apple = _applesMap[vector2Float];
         _applesMap.Remove(vector2Float);
         apple.Destroy();
+    }
+    #endregion
+
+    #region LeaderBoard
+    private class LoginScorePair
+    {
+        public string login;
+        public float score;
+    }
+
+    [SerializeField] private Text _text;
+
+    Dictionary<string, LoginScorePair> _leadersMap = new Dictionary<string, LoginScorePair>();
+
+    public void UpdateScore(string sessionId, int score)
+    {
+        if (_leadersMap.ContainsKey(sessionId) == false)
+            return;
+
+        _leadersMap[sessionId].score = score;
+
+        UpdateBoard();
+    }
+
+    private void AddLeader(string sessionId, Player player)
+    {
+        if (_leadersMap.ContainsKey(sessionId))
+            return;
+
+        _leadersMap.Add(sessionId, new LoginScorePair
+        {
+            login = player.login,
+            score = player.score
+        });
+
+        UpdateBoard();
+    }
+
+    private void RemoveLeader(string sessionId)
+    {
+        if (_leadersMap.ContainsKey(sessionId) == false)
+            return;
+
+        _leadersMap.Remove(sessionId);
+
+        UpdateBoard();
+    }
+
+    private void UpdateBoard()
+    {
+        int topCount = Mathf.Clamp(_leadersMap.Count, 0, 8);
+        var topBest = _leadersMap.OrderByDescending(pair => pair.Value.score).Take(topCount);
+
+        string text = "";
+        int i = 1;
+        foreach (var item in topBest)
+        {
+            text += $"{i}. {item.Value.login}: {item.Value.score}\n";
+            i++;
+            Debug.Log(text);
+        }
     }
     #endregion
 }
